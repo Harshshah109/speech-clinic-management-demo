@@ -39,25 +39,19 @@ export default function QuickActions() {
     setOpenPayment] =
       useState(false)
 
-  const scrollToModal =
-    () => {
+  const openQuickModal =
+    (setter) => {
+
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      })
 
       setTimeout(() => {
 
-        const modal =
-          document.getElementById(
-            'quick-action-modal'
-          )
+        setter(true)
 
-        if (modal) {
-
-          modal.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-          })
-        }
-
-      }, 100)
+      }, 250)
     }
 
   const actions = [
@@ -70,12 +64,10 @@ export default function QuickActions() {
       shadow:
         'shadow-violet-500/20',
 
-      action: () => {
-
-        setOpenPatient(true)
-
-        scrollToModal()
-      }
+      action: () =>
+        openQuickModal(
+          setOpenPatient
+        )
     },
     {
       title: 'New Appointment',
@@ -86,12 +78,10 @@ export default function QuickActions() {
       shadow:
         'shadow-cyan-500/20',
 
-      action: () => {
-
-        setOpenAppointment(true)
-
-        scrollToModal()
-      }
+      action: () =>
+        openQuickModal(
+          setOpenAppointment
+        )
     },
     {
       title: 'Add Therapist',
@@ -102,12 +92,10 @@ export default function QuickActions() {
       shadow:
         'shadow-pink-500/20',
 
-      action: () => {
-
-        setOpenTherapist(true)
-
-        scrollToModal()
-      }
+      action: () =>
+        openQuickModal(
+          setOpenTherapist
+        )
     },
     {
       title: 'Add Payment',
@@ -118,12 +106,10 @@ export default function QuickActions() {
       shadow:
         'shadow-emerald-500/20',
 
-      action: () => {
-
-        setOpenPayment(true)
-
-        scrollToModal()
-      }
+      action: () =>
+        openQuickModal(
+          setOpenPayment
+        )
     }
   ]
 
@@ -232,39 +218,37 @@ export default function QuickActions() {
 
       {/* MODALS */}
 
-      <div id="quick-action-modal">
-        {openPatient && (
-          <AddPatientModal
-            close={() =>
-              setOpenPatient(false)
-            }
-          />
-        )}
+      {openPatient && (
+        <AddPatientModal
+          close={() =>
+            setOpenPatient(false)
+          }
+        />
+      )}
 
-        {openAppointment && (
-          <AddAppointmentModal
-            close={() =>
-              setOpenAppointment(false)
-            }
-          />
-        )}
+      {openAppointment && (
+        <AddAppointmentModal
+          close={() =>
+            setOpenAppointment(false)
+          }
+        />
+      )}
 
-        {openTherapist && (
-          <AddTherapistModal
-            close={() =>
-              setOpenTherapist(false)
-            }
-          />
-        )}
+      {openTherapist && (
+        <AddTherapistModal
+          close={() =>
+            setOpenTherapist(false)
+          }
+        />
+      )}
 
-        {openPayment && (
-          <AddPaymentModal
-            close={() =>
-              setOpenPayment(false)
-            }
-          />
-        )}
-      </div>
+      {openPayment && (
+        <AddPaymentModal
+          close={() =>
+            setOpenPayment(false)
+          }
+        />
+      )}
     </>
   )
 }
