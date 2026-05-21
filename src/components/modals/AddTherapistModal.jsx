@@ -1,753 +1,248 @@
-import { useState } from 'react'
+import {
+  useState
+} from 'react'
 
 import {
-  X,
-  Plus,
-  Save
+  Users,
+  CalendarDays,
+  Wallet,
+  Stethoscope
 } from 'lucide-react'
 
-import {
-  addTherapist,
-  updateTherapist
-} from '../../services/therapistService'
+import AddPatientModal
+  from '../modals/AddPatientModal'
 
-export default function AddTherapistModal({
-  close,
-  refresh,
-  editData,
-  isEdit
-}) {
+import AddAppointmentModal
+  from '../modals/AddAppointmentModal'
 
-  const [form, setForm] = useState({
+import AddTherapistModal
+  from '../modals/AddTherapistModal'
 
-    firstName:
-      editData?.name?.split(' ')[0] || '',
+import AddPaymentModal
+  from '../modals/AddPaymentModal'
 
-    lastName:
-      editData?.name?.split(' ').slice(1).join(' ') || '',
+export default function QuickActions() {
 
-    phone:
-      editData?.phone || '',
+  const [openPatient,
+    setOpenPatient] =
+      useState(false)
 
-    email:
-      editData?.email || '',
+  const [openAppointment,
+    setOpenAppointment] =
+      useState(false)
 
-    role:
-      editData?.role || '',
+  const [openTherapist,
+    setOpenTherapist] =
+      useState(false)
 
-    experience:
-      editData?.experience || '',
+  const [openPayment,
+    setOpenPayment] =
+      useState(false)
 
-    qualification:
-      editData?.qualification || '',
+  const openQuickModal =
+    (setter) => {
 
-    specialization: '',
+      setter(true)
 
-    availability:
-      editData?.availability || [],
+      setTimeout(() => {
 
-    startTime:
-      editData?.startTime || '09:00',
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        })
 
-    endTime:
-      editData?.endTime || '17:00',
-
-    sessionsPerDay:
-      editData?.sessionsPerDay || '6',
-
-    status:
-      editData?.status || 'Active',
-
-    notes:
-      editData?.notes || ''
-  })
-
-  const [specializations,
-    setSpecializations] =
-      useState(
-
-        editData?.specialization
-          ? editData.specialization.split(', ')
-          : []
-      )
-
-  const handleChange = (e) => {
-
-    setForm({
-      ...form,
-      [e.target.name]:
-        e.target.value
-    })
-  }
-
-  const addSpecialization = () => {
-
-    if (!form.specialization)
-      return
-
-    if (
-      specializations.includes(
-        form.specialization
-      )
-    ) return
-
-    setSpecializations([
-      ...specializations,
-      form.specialization
-    ])
-
-    setForm({
-      ...form,
-      specialization: ''
-    })
-  }
-
-  const removeSpecialization =
-    (item) => {
-
-      setSpecializations(
-
-        specializations.filter(
-          (spec) =>
-            spec !== item
-        )
-      )
+      }, 80)
     }
 
-  const handleSubmit =
-    async (e) => {
+  const actions = [
+    {
+      title: 'Add Patient',
+      icon: Users,
+      gradient:
+        'from-violet-500 to-fuchsia-500',
 
-      e.preventDefault()
+      shadow:
+        'shadow-violet-500/20',
 
-      const therapistData = {
-
-        name:
-          `${form.firstName} ${form.lastName}`,
-
-        phone:
-          form.phone,
-
-        email:
-          form.email,
-
-        role:
-          form.role,
-
-        experience:
-          form.experience,
-
-        qualification:
-          form.qualification,
-
-        specialization:
-          specializations.join(', '),
-
-        availability:
-          form.availability,
-
-        startTime:
-          form.startTime,
-
-        endTime:
-          form.endTime,
-
-        sessionsPerDay:
-          form.sessionsPerDay,
-
-        status:
-          form.status,
-
-        notes:
-          form.notes
-      }
-
-      try {
-
-        if (isEdit) {
-
-          await updateTherapist(
-            editData.id,
-            therapistData
-          )
-
-        } else {
-
-          await addTherapist({
-            ...therapistData,
-            createdAt:
-              new Date()
-          })
-        }
-
-        refresh()
-
-        close()
-
-      } catch (err) {
-
-        console.log(err)
-
-        alert(
-          err.message ||
-          'Error saving therapist'
+      action: () =>
+        openQuickModal(
+          setOpenPatient
         )
-      }
+    },
+    {
+      title: 'New Appointment',
+      icon: CalendarDays,
+      gradient:
+        'from-cyan-400 to-blue-500',
+
+      shadow:
+        'shadow-cyan-500/20',
+
+      action: () =>
+        openQuickModal(
+          setOpenAppointment
+        )
+    },
+    {
+      title: 'Add Therapist',
+      icon: Stethoscope,
+      gradient:
+        'from-pink-400 to-rose-500',
+
+      shadow:
+        'shadow-pink-500/20',
+
+      action: () =>
+        openQuickModal(
+          setOpenTherapist
+        )
+    },
+    {
+      title: 'Add Payment',
+      icon: Wallet,
+      gradient:
+        'from-emerald-400 to-green-500',
+
+      shadow:
+        'shadow-emerald-500/20',
+
+      action: () =>
+        openQuickModal(
+          setOpenPayment
+        )
     }
+  ]
 
   return (
-    <div className="
-      fixed
-      inset-0
-      z-50
-      bg-black/40
-      backdrop-blur-md
-      flex
-      items-center
-      justify-center
-      p-3
-    ">
-
+    <>
       <div className="
-        w-full
-        max-w-3xl
-        max-h-[92vh]
-        overflow-y-auto
-        bg-white/90
+        bg-white/75
         border
         border-[#ece7ff]
-        rounded-[32px]
+        rounded-3xl
         p-6
-        md:p-7
-        relative
         backdrop-blur-xl
-        shadow-[0_10px_40px_rgba(124,58,237,0.12)]
+        shadow-[0_10px_30px_rgba(124,58,237,0.08)]
       ">
 
-        {/* CLOSE */}
-        <button
-          onClick={close}
-          className="
-            absolute
-            top-5
-            right-5
-            w-11
-            h-11
-            rounded-2xl
-            border
-            border-[#ece7ff]
-            flex
-            items-center
-            justify-center
-            hover:bg-[#f5f3ff]
-            transition-all
+        <div className="mb-6">
+
+          <h2 className="
+            text-3xl
+            font-bold
             text-[#1f1147]
-          "
-        >
-          <X size={18} />
-        </button>
+            mb-1
+          ">
+            Quick Actions
+          </h2>
 
-        {/* TITLE */}
-        <h2 className="
-          text-4xl
-          font-bold
-          mb-8
-          text-[#1f1147]
-        ">
+          <p className="
+            text-[#7c6ca8]
+            text-sm
+          ">
+            Manage clinic instantly
+          </p>
+        </div>
 
-          {isEdit
-            ? 'Edit Therapist'
-            : 'Add New Therapist'}
-        </h2>
+        <div className="space-y-4">
 
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-7"
-        >
+          {actions.map((item) => {
 
-          {/* PERSONAL INFO */}
-          <div>
+            const Icon = item.icon
 
-            <h3 className="
-              text-xs
-              tracking-[0.2em]
-              text-violet-500
-              font-bold
-              mb-5
-            ">
-              PERSONAL INFO
-            </h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-              {/* FIRST NAME */}
-              <div>
-
-                <label className="
-                  text-sm
-                  text-[#7c6ca8]
-                  font-medium
-                  mb-2
-                  block
-                ">
-                  First Name *
-                </label>
-
-                <input
-                  type="text"
-                  name="firstName"
-                  value={form.firstName}
-                  onChange={handleChange}
-                  className="
-                    w-full
-                    h-14
-                    bg-white/80
-                    border
-                    border-[#ece7ff]
-                    rounded-2xl
-                    px-5
-                    outline-none
-                    text-[#1f1147]
-                  "
-                  required
-                />
-              </div>
-
-              {/* LAST NAME */}
-              <div>
-
-                <label className="
-                  text-sm
-                  text-[#7c6ca8]
-                  font-medium
-                  mb-2
-                  block
-                ">
-                  Last Name *
-                </label>
-
-                <input
-                  type="text"
-                  name="lastName"
-                  value={form.lastName}
-                  onChange={handleChange}
-                  className="
-                    w-full
-                    h-14
-                    bg-white/80
-                    border
-                    border-[#ece7ff]
-                    rounded-2xl
-                    px-5
-                    outline-none
-                    text-[#1f1147]
-                  "
-                  required
-                />
-              </div>
-
-              {/* PHONE */}
-              <div>
-
-                <label className="
-                  text-sm
-                  text-[#7c6ca8]
-                  font-medium
-                  mb-2
-                  block
-                ">
-                  Phone
-                </label>
-
-                <input
-                  type="text"
-                  name="phone"
-                  value={form.phone}
-                  onChange={handleChange}
-                  className="
-                    w-full
-                    h-14
-                    bg-white/80
-                    border
-                    border-[#ece7ff]
-                    rounded-2xl
-                    px-5
-                    outline-none
-                    text-[#1f1147]
-                  "
-                />
-              </div>
-
-              {/* EMAIL */}
-              <div>
-
-                <label className="
-                  text-sm
-                  text-[#7c6ca8]
-                  font-medium
-                  mb-2
-                  block
-                ">
-                  Email
-                </label>
-
-                <input
-                  type="email"
-                  name="email"
-                  value={form.email}
-                  onChange={handleChange}
-                  className="
-                    w-full
-                    h-14
-                    bg-white/80
-                    border
-                    border-[#ece7ff]
-                    rounded-2xl
-                    px-5
-                    outline-none
-                    text-[#1f1147]
-                  "
-                />
-              </div>
-
-              {/* ROLE */}
-              <div>
-
-                <label className="
-                  text-sm
-                  text-[#7c6ca8]
-                  font-medium
-                  mb-2
-                  block
-                ">
-                  Role / Title
-                </label>
-
-                <input
-                  type="text"
-                  name="role"
-                  value={form.role}
-                  onChange={handleChange}
-                  className="
-                    w-full
-                    h-14
-                    bg-white/80
-                    border
-                    border-[#ece7ff]
-                    rounded-2xl
-                    px-5
-                    outline-none
-                    text-[#1f1147]
-                  "
-                />
-              </div>
-
-              {/* EXPERIENCE */}
-              <div>
-
-                <label className="
-                  text-sm
-                  text-[#7c6ca8]
-                  font-medium
-                  mb-2
-                  block
-                ">
-                  Experience (Years)
-                </label>
-
-                <input
-                  type="number"
-                  name="experience"
-                  value={form.experience}
-                  onChange={handleChange}
-                  className="
-                    w-full
-                    h-14
-                    bg-white/80
-                    border
-                    border-[#ece7ff]
-                    rounded-2xl
-                    px-5
-                    outline-none
-                    text-[#1f1147]
-                  "
-                />
-              </div>
-            </div>
-
-            {/* QUALIFICATION */}
-            <div className="mt-4">
-
-              <label className="
-                text-sm
-                text-[#7c6ca8]
-                font-medium
-                mb-2
-                block
-              ">
-                Qualification
-              </label>
-
-              <input
-                type="text"
-                name="qualification"
-                value={form.qualification}
-                onChange={handleChange}
+            return (
+              <button
+                key={item.title}
+                onClick={item.action}
                 className="
                   w-full
-                  h-14
-                  bg-white/80
+                  flex
+                  items-center
+                  gap-4
+                  p-5
+                  rounded-3xl
                   border
                   border-[#ece7ff]
-                  rounded-2xl
-                  px-5
-                  outline-none
-                  text-[#1f1147]
-                "
-              />
-            </div>
-          </div>
-
-          {/* SPECIALIZATIONS */}
-          <div>
-
-            <h3 className="
-              text-xs
-              tracking-[0.2em]
-              text-violet-500
-              font-bold
-              mb-5
-            ">
-              SPECIALIZATIONS
-            </h3>
-
-            <div className="flex gap-3">
-
-              <select
-                name="specialization"
-                value={form.specialization}
-                onChange={handleChange}
-                className="
-                  flex-1
-                  h-14
-                  bg-white/80
-                  border
-                  border-[#ece7ff]
-                  rounded-2xl
-                  px-5
-                  outline-none
-                  text-[#1f1147]
+                  bg-[#faf8ff]
+                  hover:bg-[#f5f3ff]
+                  transition-all
+                  group
                 "
               >
 
-                <option value="">
-                  — Add specialization —
-                </option>
-
-                <option>
-                  Articulation Disorder
-                </option>
-
-                <option>
-                  Voice Therapy
-                </option>
-
-                <option>
-                  Speech Therapy
-                </option>
-
-                <option>
-                  Stuttering Therapy
-                </option>
-
-                <option>
-                  Language Development
-                </option>
-              </select>
-
-              <button
-                type="button"
-                onClick={addSpecialization}
-                className="
+                <div className={`
                   w-14
                   h-14
                   rounded-2xl
-                  bg-gradient-to-r
-                  from-violet-600
-                  to-fuchsia-500
+                  bg-gradient-to-br
+                  ${item.gradient}
                   text-white
                   flex
                   items-center
                   justify-center
                   shadow-lg
-                  shadow-violet-500/20
-                "
-              >
-                <Plus size={18} />
-              </button>
-            </div>
+                  ${item.shadow}
+                  group-hover:scale-105
+                  transition-all
+                `}>
 
-            {/* TAGS */}
-            <div className="flex flex-wrap gap-2 mt-4">
+                  <Icon size={22} />
+                </div>
 
-              {specializations.map((item, index) => (
+                <div className="text-left">
 
-                <button
-                  key={index}
-                  type="button"
-                  onClick={() =>
-                    removeSpecialization(item)
-                  }
-                  className="
-                    px-4
-                    py-2
-                    rounded-full
-                    bg-gradient-to-r
-                    from-violet-500
-                    to-fuchsia-500
-                    text-white
+                  <h3 className="
+                    font-bold
+                    text-lg
+                    text-[#1f1147]
+                  ">
+                    {item.title}
+                  </h3>
+
+                  <p className="
                     text-sm
-                    font-semibold
-                    shadow-lg
-                    shadow-violet-500/20
-                  "
-                >
-                  {item}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* STATUS */}
-          <div>
-
-            <h3 className="
-              text-xs
-              tracking-[0.2em]
-              text-violet-500
-              font-bold
-              mb-5
-            ">
-              STATUS
-            </h3>
-
-            <select
-              name="status"
-              value={form.status}
-              onChange={handleChange}
-              className="
-                w-full
-                h-14
-                bg-white/80
-                border
-                border-[#ece7ff]
-                rounded-2xl
-                px-5
-                outline-none
-                text-[#1f1147]
-              "
-            >
-
-              <option>
-                Active
-              </option>
-
-              <option>
-                On Leave
-              </option>
-
-              <option>
-                Inactive
-              </option>
-            </select>
-          </div>
-
-          {/* NOTES */}
-          <div>
-
-            <label className="
-              text-sm
-              text-[#7c6ca8]
-              font-medium
-              mb-2
-              block
-            ">
-              Notes
-            </label>
-
-            <textarea
-              name="notes"
-              rows="4"
-              value={form.notes}
-              onChange={handleChange}
-              placeholder="Additional therapist notes..."
-              className="
-                w-full
-                bg-white/80
-                border
-                border-[#ece7ff]
-                rounded-2xl
-                p-5
-                outline-none
-                resize-none
-                text-[#1f1147]
-                placeholder:text-[#8c84b3]
-              "
-            />
-          </div>
-
-          {/* BUTTONS */}
-          <div className="flex flex-col md:flex-row gap-3 pt-2">
-
-            <button
-              type="submit"
-              className="
-                flex
-                items-center
-                justify-center
-                gap-2
-                px-6
-                h-14
-                rounded-2xl
-                bg-gradient-to-r
-                from-violet-600
-                to-fuchsia-500
-                text-white
-                font-bold
-                hover:opacity-90
-                transition-all
-                shadow-lg
-                shadow-violet-500/20
-              "
-            >
-
-              <Save size={16} />
-
-              {isEdit
-                ? 'Save Changes'
-                : 'Create Therapist'}
-            </button>
-
-            <button
-              type="button"
-              onClick={close}
-              className="
-                px-6
-                h-14
-                rounded-2xl
-                border
-                border-[#ece7ff]
-                bg-white/80
-                hover:bg-[#f5f3ff]
-                transition-all
-                text-[#1f1147]
-                font-semibold
-              "
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
+                    text-[#8c84b3]
+                  ">
+                    Quick clinic action
+                  </p>
+                </div>
+              </button>
+            )
+          })}
+        </div>
       </div>
-    </div>
+
+      {openPatient && (
+        <AddPatientModal
+          close={() =>
+            setOpenPatient(false)
+          }
+        />
+      )}
+
+      {openAppointment && (
+        <AddAppointmentModal
+          close={() =>
+            setOpenAppointment(false)
+          }
+        />
+      )}
+
+      {openTherapist && (
+        <AddTherapistModal
+          close={() =>
+            setOpenTherapist(false)
+          }
+        />
+      )}
+
+      {openPayment && (
+        <AddPaymentModal
+          close={() =>
+            setOpenPayment(false)
+          }
+        />
+      )}
+    </>
   )
 }
