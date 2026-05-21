@@ -39,19 +39,50 @@ export default function QuickActions() {
     setOpenPayment] =
       useState(false)
 
-  const openQuickModal =
-    (setter) => {
+  const scrollPageToTop =
+    () => {
 
       window.scrollTo({
         top: 0,
         behavior: 'smooth'
       })
 
+      document.documentElement.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      })
+
+      document.body.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      })
+
+      const scrollContainers =
+        document.querySelectorAll(
+          'main, .overflow-y-auto, .overflow-auto'
+        )
+
+      scrollContainers.forEach(
+        (container) => {
+
+          container.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+          })
+        }
+      )
+    }
+
+  const openQuickModal =
+    (setter) => {
+
+      setter(true)
+
       setTimeout(() => {
 
-        setter(true)
+        scrollPageToTop()
 
-      }, 250)
+      }, 100)
     }
 
   const actions = [
@@ -125,7 +156,6 @@ export default function QuickActions() {
         shadow-[0_10px_30px_rgba(124,58,237,0.08)]
       ">
 
-        {/* Header */}
         <div className="mb-6">
 
           <h2 className="
@@ -145,7 +175,6 @@ export default function QuickActions() {
           </p>
         </div>
 
-        {/* Actions */}
         <div className="space-y-4">
 
           {actions.map((item) => {
@@ -172,7 +201,6 @@ export default function QuickActions() {
                 "
               >
 
-                {/* ICON */}
                 <div className={`
                   w-14
                   h-14
@@ -192,7 +220,6 @@ export default function QuickActions() {
                   <Icon size={22} />
                 </div>
 
-                {/* TEXT */}
                 <div className="text-left">
 
                   <h3 className="
@@ -215,8 +242,6 @@ export default function QuickActions() {
           })}
         </div>
       </div>
-
-      {/* MODALS */}
 
       {openPatient && (
         <AddPatientModal

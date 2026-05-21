@@ -1,248 +1,755 @@
-import {
-  useState
-} from 'react'
+import { useState } from 'react'
 
 import {
-  Users,
-  CalendarDays,
-  Wallet,
-  Stethoscope
+  X,
+  Plus,
+  Save
 } from 'lucide-react'
 
-import AddPatientModal
-  from '../modals/AddPatientModal'
+import {
+  addTherapist,
+  updateTherapist
+} from '../../services/therapistService'
 
-import AddAppointmentModal
-  from '../modals/AddAppointmentModal'
+export default function AddTherapistModal({
+  close,
+  refresh,
+  editData,
+  isEdit
+}) {
 
-import AddTherapistModal
-  from '../modals/AddTherapistModal'
+  const [form, setForm] = useState({
 
-import AddPaymentModal
-  from '../modals/AddPaymentModal'
+    firstName:
+      editData?.name?.split(' ')[0] || '',
 
-export default function QuickActions() {
+    lastName:
+      editData?.name?.split(' ').slice(1).join(' ') || '',
 
-  const [openPatient,
-    setOpenPatient] =
-      useState(false)
+    phone:
+      editData?.phone || '',
 
-  const [openAppointment,
-    setOpenAppointment] =
-      useState(false)
+    email:
+      editData?.email || '',
 
-  const [openTherapist,
-    setOpenTherapist] =
-      useState(false)
+    role:
+      editData?.role || '',
 
-  const [openPayment,
-    setOpenPayment] =
-      useState(false)
+    experience:
+      editData?.experience || '',
 
-  const openQuickModal =
-    (setter) => {
+    qualification:
+      editData?.qualification || '',
 
-      setter(true)
+    specialization: '',
 
-      setTimeout(() => {
+    availability:
+      editData?.availability || [],
 
-        window.scrollTo({
-          top: 0,
-          behavior: 'smooth'
-        })
+    startTime:
+      editData?.startTime || '09:00',
 
-      }, 80)
+    endTime:
+      editData?.endTime || '17:00',
+
+    sessionsPerDay:
+      editData?.sessionsPerDay || '6',
+
+    status:
+      editData?.status || 'Active',
+
+    notes:
+      editData?.notes || ''
+  })
+
+  const [specializations,
+    setSpecializations] =
+      useState(
+
+        editData?.specialization
+          ? editData.specialization.split(', ')
+          : []
+      )
+
+  const handleChange = (e) => {
+
+    setForm({
+      ...form,
+      [e.target.name]:
+        e.target.value
+    })
+  }
+
+  const addSpecialization = () => {
+
+    if (!form.specialization)
+      return
+
+    if (
+      specializations.includes(
+        form.specialization
+      )
+    ) return
+
+    setSpecializations([
+      ...specializations,
+      form.specialization
+    ])
+
+    setForm({
+      ...form,
+      specialization: ''
+    })
+  }
+
+  const removeSpecialization =
+    (item) => {
+
+      setSpecializations(
+
+        specializations.filter(
+          (spec) =>
+            spec !== item
+        )
+      )
     }
 
-  const actions = [
-    {
-      title: 'Add Patient',
-      icon: Users,
-      gradient:
-        'from-violet-500 to-fuchsia-500',
+  const handleSubmit =
+    async (e) => {
 
-      shadow:
-        'shadow-violet-500/20',
+      e.preventDefault()
 
-      action: () =>
-        openQuickModal(
-          setOpenPatient
+      const therapistData = {
+
+        name:
+          `${form.firstName} ${form.lastName}`,
+
+        phone:
+          form.phone,
+
+        email:
+          form.email,
+
+        role:
+          form.role,
+
+        experience:
+          form.experience,
+
+        qualification:
+          form.qualification,
+
+        specialization:
+          specializations.join(', '),
+
+        availability:
+          form.availability,
+
+        startTime:
+          form.startTime,
+
+        endTime:
+          form.endTime,
+
+        sessionsPerDay:
+          form.sessionsPerDay,
+
+        status:
+          form.status,
+
+        notes:
+          form.notes
+      }
+
+      try {
+
+        if (isEdit) {
+
+          await updateTherapist(
+            editData.id,
+            therapistData
+          )
+
+        } else {
+
+          await addTherapist({
+            ...therapistData,
+            createdAt:
+              new Date()
+          })
+        }
+
+        refresh()
+
+        close()
+
+      } catch (err) {
+
+        console.log(err)
+
+        alert(
+          err.message ||
+          'Error saving therapist'
         )
-    },
-    {
-      title: 'New Appointment',
-      icon: CalendarDays,
-      gradient:
-        'from-cyan-400 to-blue-500',
-
-      shadow:
-        'shadow-cyan-500/20',
-
-      action: () =>
-        openQuickModal(
-          setOpenAppointment
-        )
-    },
-    {
-      title: 'Add Therapist',
-      icon: Stethoscope,
-      gradient:
-        'from-pink-400 to-rose-500',
-
-      shadow:
-        'shadow-pink-500/20',
-
-      action: () =>
-        openQuickModal(
-          setOpenTherapist
-        )
-    },
-    {
-      title: 'Add Payment',
-      icon: Wallet,
-      gradient:
-        'from-emerald-400 to-green-500',
-
-      shadow:
-        'shadow-emerald-500/20',
-
-      action: () =>
-        openQuickModal(
-          setOpenPayment
-        )
+      }
     }
-  ]
 
   return (
-    <>
+    <div className="
+      fixed
+      inset-0
+      z-50
+      bg-black/40
+      backdrop-blur-md
+      flex
+      items-start
+      justify-center
+      p-3
+      pt-10
+      overflow-y-auto
+    ">
+
       <div className="
-        bg-white/75
+        w-full
+        max-w-3xl
+        max-h-[92vh]
+        overflow-y-auto
+        bg-white/90
         border
         border-[#ece7ff]
-        rounded-3xl
+        rounded-[32px]
         p-6
+        md:p-7
+        relative
         backdrop-blur-xl
-        shadow-[0_10px_30px_rgba(124,58,237,0.08)]
+        shadow-[0_10px_40px_rgba(124,58,237,0.12)]
       ">
 
-        <div className="mb-6">
-
-          <h2 className="
-            text-3xl
-            font-bold
+        {/* CLOSE */}
+        <button
+          onClick={close}
+          className="
+            absolute
+            top-5
+            right-5
+            w-11
+            h-11
+            rounded-2xl
+            border
+            border-[#ece7ff]
+            flex
+            items-center
+            justify-center
+            hover:bg-[#f5f3ff]
+            transition-all
             text-[#1f1147]
-            mb-1
-          ">
-            Quick Actions
-          </h2>
+          "
+        >
+          <X size={18} />
+        </button>
 
-          <p className="
-            text-[#7c6ca8]
-            text-sm
-          ">
-            Manage clinic instantly
-          </p>
-        </div>
+        {/* TITLE */}
+        <h2 className="
+          text-4xl
+          font-bold
+          mb-8
+          text-[#1f1147]
+        ">
 
-        <div className="space-y-4">
+          {isEdit
+            ? 'Edit Therapist'
+            : 'Add New Therapist'}
+        </h2>
 
-          {actions.map((item) => {
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-7"
+        >
 
-            const Icon = item.icon
+          {/* PERSONAL INFO */}
+          <div>
 
-            return (
-              <button
-                key={item.title}
-                onClick={item.action}
+            <h3 className="
+              text-xs
+              tracking-[0.2em]
+              text-violet-500
+              font-bold
+              mb-5
+            ">
+              PERSONAL INFO
+            </h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+              {/* FIRST NAME */}
+              <div>
+
+                <label className="
+                  text-sm
+                  text-[#7c6ca8]
+                  font-medium
+                  mb-2
+                  block
+                ">
+                  First Name *
+                </label>
+
+                <input
+                  type="text"
+                  name="firstName"
+                  value={form.firstName}
+                  onChange={handleChange}
+                  className="
+                    w-full
+                    h-14
+                    bg-white/80
+                    border
+                    border-[#ece7ff]
+                    rounded-2xl
+                    px-5
+                    outline-none
+                    text-[#1f1147]
+                  "
+                  required
+                />
+              </div>
+
+              {/* LAST NAME */}
+              <div>
+
+                <label className="
+                  text-sm
+                  text-[#7c6ca8]
+                  font-medium
+                  mb-2
+                  block
+                ">
+                  Last Name *
+                </label>
+
+                <input
+                  type="text"
+                  name="lastName"
+                  value={form.lastName}
+                  onChange={handleChange}
+                  className="
+                    w-full
+                    h-14
+                    bg-white/80
+                    border
+                    border-[#ece7ff]
+                    rounded-2xl
+                    px-5
+                    outline-none
+                    text-[#1f1147]
+                  "
+                  required
+                />
+              </div>
+
+              {/* PHONE */}
+              <div>
+
+                <label className="
+                  text-sm
+                  text-[#7c6ca8]
+                  font-medium
+                  mb-2
+                  block
+                ">
+                  Phone
+                </label>
+
+                <input
+                  type="text"
+                  name="phone"
+                  value={form.phone}
+                  onChange={handleChange}
+                  className="
+                    w-full
+                    h-14
+                    bg-white/80
+                    border
+                    border-[#ece7ff]
+                    rounded-2xl
+                    px-5
+                    outline-none
+                    text-[#1f1147]
+                  "
+                />
+              </div>
+
+              {/* EMAIL */}
+              <div>
+
+                <label className="
+                  text-sm
+                  text-[#7c6ca8]
+                  font-medium
+                  mb-2
+                  block
+                ">
+                  Email
+                </label>
+
+                <input
+                  type="email"
+                  name="email"
+                  value={form.email}
+                  onChange={handleChange}
+                  className="
+                    w-full
+                    h-14
+                    bg-white/80
+                    border
+                    border-[#ece7ff]
+                    rounded-2xl
+                    px-5
+                    outline-none
+                    text-[#1f1147]
+                  "
+                />
+              </div>
+
+              {/* ROLE */}
+              <div>
+
+                <label className="
+                  text-sm
+                  text-[#7c6ca8]
+                  font-medium
+                  mb-2
+                  block
+                ">
+                  Role / Title
+                </label>
+
+                <input
+                  type="text"
+                  name="role"
+                  value={form.role}
+                  onChange={handleChange}
+                  className="
+                    w-full
+                    h-14
+                    bg-white/80
+                    border
+                    border-[#ece7ff]
+                    rounded-2xl
+                    px-5
+                    outline-none
+                    text-[#1f1147]
+                  "
+                />
+              </div>
+
+              {/* EXPERIENCE */}
+              <div>
+
+                <label className="
+                  text-sm
+                  text-[#7c6ca8]
+                  font-medium
+                  mb-2
+                  block
+                ">
+                  Experience (Years)
+                </label>
+
+                <input
+                  type="number"
+                  name="experience"
+                  value={form.experience}
+                  onChange={handleChange}
+                  className="
+                    w-full
+                    h-14
+                    bg-white/80
+                    border
+                    border-[#ece7ff]
+                    rounded-2xl
+                    px-5
+                    outline-none
+                    text-[#1f1147]
+                  "
+                />
+              </div>
+            </div>
+
+            {/* QUALIFICATION */}
+            <div className="mt-4">
+
+              <label className="
+                text-sm
+                text-[#7c6ca8]
+                font-medium
+                mb-2
+                block
+              ">
+                Qualification
+              </label>
+
+              <input
+                type="text"
+                name="qualification"
+                value={form.qualification}
+                onChange={handleChange}
                 className="
                   w-full
-                  flex
-                  items-center
-                  gap-4
-                  p-5
-                  rounded-3xl
+                  h-14
+                  bg-white/80
                   border
                   border-[#ece7ff]
-                  bg-[#faf8ff]
-                  hover:bg-[#f5f3ff]
-                  transition-all
-                  group
+                  rounded-2xl
+                  px-5
+                  outline-none
+                  text-[#1f1147]
+                "
+              />
+            </div>
+          </div>
+
+          {/* SPECIALIZATIONS */}
+          <div>
+
+            <h3 className="
+              text-xs
+              tracking-[0.2em]
+              text-violet-500
+              font-bold
+              mb-5
+            ">
+              SPECIALIZATIONS
+            </h3>
+
+            <div className="flex gap-3">
+
+              <select
+                name="specialization"
+                value={form.specialization}
+                onChange={handleChange}
+                className="
+                  flex-1
+                  h-14
+                  bg-white/80
+                  border
+                  border-[#ece7ff]
+                  rounded-2xl
+                  px-5
+                  outline-none
+                  text-[#1f1147]
                 "
               >
 
-                <div className={`
+                <option value="">
+                  — Add specialization —
+                </option>
+
+                <option>
+                  Articulation Disorder
+                </option>
+
+                <option>
+                  Voice Therapy
+                </option>
+
+                <option>
+                  Speech Therapy
+                </option>
+
+                <option>
+                  Stuttering Therapy
+                </option>
+
+                <option>
+                  Language Development
+                </option>
+              </select>
+
+              <button
+                type="button"
+                onClick={addSpecialization}
+                className="
                   w-14
                   h-14
                   rounded-2xl
-                  bg-gradient-to-br
-                  ${item.gradient}
+                  bg-gradient-to-r
+                  from-violet-600
+                  to-fuchsia-500
                   text-white
                   flex
                   items-center
                   justify-center
                   shadow-lg
-                  ${item.shadow}
-                  group-hover:scale-105
-                  transition-all
-                `}>
-
-                  <Icon size={22} />
-                </div>
-
-                <div className="text-left">
-
-                  <h3 className="
-                    font-bold
-                    text-lg
-                    text-[#1f1147]
-                  ">
-                    {item.title}
-                  </h3>
-
-                  <p className="
-                    text-sm
-                    text-[#8c84b3]
-                  ">
-                    Quick clinic action
-                  </p>
-                </div>
+                  shadow-violet-500/20
+                "
+              >
+                <Plus size={18} />
               </button>
-            )
-          })}
-        </div>
+            </div>
+
+            {/* TAGS */}
+            <div className="flex flex-wrap gap-2 mt-4">
+
+              {specializations.map((item, index) => (
+
+                <button
+                  key={index}
+                  type="button"
+                  onClick={() =>
+                    removeSpecialization(item)
+                  }
+                  className="
+                    px-4
+                    py-2
+                    rounded-full
+                    bg-gradient-to-r
+                    from-violet-500
+                    to-fuchsia-500
+                    text-white
+                    text-sm
+                    font-semibold
+                    shadow-lg
+                    shadow-violet-500/20
+                  "
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* STATUS */}
+          <div>
+
+            <h3 className="
+              text-xs
+              tracking-[0.2em]
+              text-violet-500
+              font-bold
+              mb-5
+            ">
+              STATUS
+            </h3>
+
+            <select
+              name="status"
+              value={form.status}
+              onChange={handleChange}
+              className="
+                w-full
+                h-14
+                bg-white/80
+                border
+                border-[#ece7ff]
+                rounded-2xl
+                px-5
+                outline-none
+                text-[#1f1147]
+              "
+            >
+
+              <option>
+                Active
+              </option>
+
+              <option>
+                On Leave
+              </option>
+
+              <option>
+                Inactive
+              </option>
+            </select>
+          </div>
+
+          {/* NOTES */}
+          <div>
+
+            <label className="
+              text-sm
+              text-[#7c6ca8]
+              font-medium
+              mb-2
+              block
+            ">
+              Notes
+            </label>
+
+            <textarea
+              name="notes"
+              rows="4"
+              value={form.notes}
+              onChange={handleChange}
+              placeholder="Additional therapist notes..."
+              className="
+                w-full
+                bg-white/80
+                border
+                border-[#ece7ff]
+                rounded-2xl
+                p-5
+                outline-none
+                resize-none
+                text-[#1f1147]
+                placeholder:text-[#8c84b3]
+              "
+            />
+          </div>
+
+          {/* BUTTONS */}
+          <div className="flex flex-col md:flex-row gap-3 pt-2">
+
+            <button
+              type="submit"
+              className="
+                flex
+                items-center
+                justify-center
+                gap-2
+                px-6
+                h-14
+                rounded-2xl
+                bg-gradient-to-r
+                from-violet-600
+                to-fuchsia-500
+                text-white
+                font-bold
+                hover:opacity-90
+                transition-all
+                shadow-lg
+                shadow-violet-500/20
+              "
+            >
+
+              <Save size={16} />
+
+              {isEdit
+                ? 'Save Changes'
+                : 'Create Therapist'}
+            </button>
+
+            <button
+              type="button"
+              onClick={close}
+              className="
+                px-6
+                h-14
+                rounded-2xl
+                border
+                border-[#ece7ff]
+                bg-white/80
+                hover:bg-[#f5f3ff]
+                transition-all
+                text-[#1f1147]
+                font-semibold
+              "
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
       </div>
-
-      {openPatient && (
-        <AddPatientModal
-          close={() =>
-            setOpenPatient(false)
-          }
-        />
-      )}
-
-      {openAppointment && (
-        <AddAppointmentModal
-          close={() =>
-            setOpenAppointment(false)
-          }
-        />
-      )}
-
-      {openTherapist && (
-        <AddTherapistModal
-          close={() =>
-            setOpenTherapist(false)
-          }
-        />
-      )}
-
-      {openPayment && (
-        <AddPaymentModal
-          close={() =>
-            setOpenPayment(false)
-          }
-        />
-      )}
-    </>
+    </div>
   )
 }
