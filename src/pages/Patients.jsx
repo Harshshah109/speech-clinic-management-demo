@@ -7,15 +7,27 @@ import {
   Trash2,
   ClipboardPen,
   IndianRupee,
-  AlertCircle
+  AlertCircle,
+  FileDown,
+  X
 } from 'lucide-react'
 
 import { useEffect, useState } from 'react'
+
+import * as XLSX from 'xlsx'
+
+import jsPDF from 'jspdf'
+
+import autoTable from 'jspdf-autotable'
 
 import {
   getPatients,
   deletePatient
 } from '../services/patientService'
+
+import {
+  getPayments
+} from '../services/paymentService'
 
 import AddPatientModal
   from '../components/modals/AddPatientModal'
@@ -58,6 +70,18 @@ export default function Patients({
     setHistoryPatient] =
       useState(null)
 
+  const [paymentReportPatient,
+    setPaymentReportPatient] =
+      useState(null)
+
+  const [reportFromDate,
+    setReportFromDate] =
+      useState('')
+
+  const [reportToDate,
+    setReportToDate] =
+      useState('')
+
   const [search, setSearch] =
     useState('')
 
@@ -78,6 +102,230 @@ export default function Patients({
         await getPatients()
 
       setPatients(data || [])
+    }
+
+  const formatDisplayDate =
+    (dateValue) => {
+
+      if (!dateValue)
+        return ''
+
+      const date =
+        dateValue?.seconds
+          ? new Date(dateValue.seconds * 1000)
+          : new Date(dateValue)
+
+      return date.toLocaleDateString('en-IN')
+    }
+
+  const getPaymentDate =
+    (payment) => {
+
+      if (!payment.date)
+        return null
+
+      return payment.date?.seconds
+        ? new Date(payment.date.seconds * 1000)
+        : new Date(payment.date)
+    }
+
+  const getPatientPaymentRows =
+    async () => {
+
+      const allPayments =
+        await getPayments()
+
+      let patientPayments =
+        (allPayments || [])
+          .filter((payment) =>
+            payment.patient === paymentReportPatient.name
+          )
+          .sort((a, b) =>
+            getPaymentDate(a) - getPaymentDate(b)
+          )
+
+      if (reportFromDate) {
+
+        const from =
+          new Date(reportFromDate)
+
+        patientPayments =
+          patientPayments.filter((payment) =>
+            getPaymentDate(payment) >= from
+          )
+      }
+
+      if (reportToDate) {
+
+        const to =
+          new Date(reportToDate)
+
+        to.setHours(23, 59, 59, 999)
+
+        patientPayments =
+          patientPayments.filter((payment) =>
+            getPaymentDate(payment) <= to
+          )
+      }
+
+      return patientPayments.map((payment, index) => ({
+
+        No:
+          index + 1,
+
+        Date:
+          formatDisplayDate(payment.date),
+
+        Type:
+          payment.paymentType || 'Payment',
+
+        Amount:
+          Number(payment.amount || 0),
+
+        Method:
+          payment.paymentType === 'Pending Payment'
+            ? 'No payment method required'
+            : payment.method || '-',
+
+        Status:
+          payment.status || '-',
+
+        WalletAfterTransaction:
+          Number(payment.remainingWallet || 0),
+
+        PendingAfterTransaction:
+          Number(payment.remainingDue || 0)
+      }))
+    }
+
+  const downloadPatientExcel =
+    async () => {
+
+      const rows =
+        await getPatientPaymentRows()
+
+      const lastRow =
+        rows[rows.length - 1]
+
+      const summary = [
+        {
+          Patient:
+            paymentReportPatient.name,
+
+          FinalWallet:
+            lastRow
+              ? lastRow.WalletAfterTransaction
+              : Number(paymentReportPatient.walletBalance || 0),
+
+          FinalPending:
+            lastRow
+              ? lastRow.PendingAfterTransaction
+              : Number(paymentReportPatient.pendingDue || 0),
+
+          TotalTransactions:
+            rows.length
+        },
+        {}
+      ]
+
+      const worksheet =
+        XLSX.utils.json_to_sheet([
+          ...summary,
+          ...rows
+        ])
+
+      const workbook =
+        XLSX.utils.book_new()
+
+      XLSX.utils.book_append_sheet(
+        workbook,
+        worksheet,
+        'Payment History'
+      )
+
+      XLSX.writeFile(
+        workbook,
+        `${paymentReportPatient.name}-payment-history.xlsx`
+      )
+    }
+
+  const downloadPatientPDF =
+    async () => {
+
+      const rows =
+        await getPatientPaymentRows()
+
+      const lastRow =
+        rows[rows.length - 1]
+
+      const finalWallet =
+        lastRow
+          ? lastRow.WalletAfterTransaction
+          : Number(paymentReportPatient.walletBalance || 0)
+
+      const finalPending =
+        lastRow
+          ? lastRow.PendingAfterTransaction
+          : Number(paymentReportPatient.pendingDue || 0)
+
+      const doc =
+        new jsPDF()
+
+      doc.setFontSize(18)
+
+      doc.text(
+        'Patient Payment History',
+        14,
+        18
+      )
+
+      doc.setFontSize(11)
+
+      doc.text(
+        `Patient: ${paymentReportPatient.name}`,
+        14,
+        28
+      )
+
+      doc.text(
+        `Final Wallet: Rs. ${finalWallet}`,
+        14,
+        36
+      )
+
+      doc.text(
+        `Final Pending Due: Rs. ${finalPending}`,
+        14,
+        44
+      )
+
+      autoTable(doc, {
+        startY: 54,
+        head: [[
+          'No',
+          'Date',
+          'Type',
+          'Amount',
+          'Method',
+          'Status',
+          'Wallet',
+          'Pending'
+        ]],
+        body: rows.map((item) => [
+          item.No,
+          item.Date,
+          item.Type,
+          `Rs. ${item.Amount}`,
+          item.Method,
+          item.Status,
+          `Rs. ${item.WalletAfterTransaction}`,
+          `Rs. ${item.PendingAfterTransaction}`
+        ])
+      })
+
+      doc.save(
+        `${paymentReportPatient.name}-payment-history.pdf`
+      )
     }
 
   return (
@@ -621,6 +869,32 @@ export default function Patients({
 
                   View Appointment History
                 </button>
+
+                {role === 'admin' && (
+                  <button
+                    onClick={() => {
+
+                      setPaymentReportPatient(patient)
+
+                      setReportFromDate('')
+
+                      setReportToDate('')
+                    }}
+                    className="
+                      mt-3
+                      flex
+                      items-center
+                      gap-2
+                      text-sm
+                      text-violet-600
+                      font-semibold
+                    "
+                  >
+                    <FileDown size={16} />
+
+                    Download Payment History
+                  </button>
+                )}
               </div>
             )
           })}
@@ -663,6 +937,232 @@ export default function Patients({
             setHistoryPatient(null)
           }
         />
+      )}
+
+      {paymentReportPatient && (
+        <div className="
+          fixed
+          inset-0
+          z-50
+          bg-black/40
+          backdrop-blur-md
+          flex
+          items-start
+          justify-center
+          p-4
+          pt-10
+        ">
+
+          <div className="
+            w-full
+            max-w-xl
+            bg-white
+            rounded-3xl
+            p-6
+            border
+            border-[#ece7ff]
+            shadow-[0_10px_40px_rgba(124,58,237,0.18)]
+            relative
+          ">
+
+            <button
+              onClick={() =>
+                setPaymentReportPatient(null)
+              }
+              className="
+                absolute
+                top-5
+                right-5
+                w-10
+                h-10
+                rounded-2xl
+                border
+                border-[#ece7ff]
+                flex
+                items-center
+                justify-center
+              "
+            >
+              <X size={18} />
+            </button>
+
+            <h2 className="
+              text-3xl
+              font-bold
+              text-[#1f1147]
+              mb-2
+            ">
+              Payment History Report
+            </h2>
+
+            <p className="
+              text-[#7c6ca8]
+              mb-6
+            ">
+              {paymentReportPatient.name}
+            </p>
+
+            <div className="
+              grid
+              grid-cols-1
+              md:grid-cols-2
+              gap-4
+              mb-6
+            ">
+
+              <div>
+
+                <label className="
+                  text-sm
+                  text-[#7c6ca8]
+                  font-semibold
+                  mb-2
+                  block
+                ">
+                  From Date
+                </label>
+
+                <input
+                  type="date"
+                  value={reportFromDate}
+                  onChange={(e) =>
+                    setReportFromDate(e.target.value)
+                  }
+                  className="
+                    w-full
+                    h-14
+                    rounded-2xl
+                    border
+                    border-[#ece7ff]
+                    px-4
+                    outline-none
+                  "
+                />
+              </div>
+
+              <div>
+
+                <label className="
+                  text-sm
+                  text-[#7c6ca8]
+                  font-semibold
+                  mb-2
+                  block
+                ">
+                  To Date
+                </label>
+
+                <input
+                  type="date"
+                  value={reportToDate}
+                  onChange={(e) =>
+                    setReportToDate(e.target.value)
+                  }
+                  className="
+                    w-full
+                    h-14
+                    rounded-2xl
+                    border
+                    border-[#ece7ff]
+                    px-4
+                    outline-none
+                  "
+                />
+              </div>
+            </div>
+
+            <div className="
+              grid
+              grid-cols-1
+              md:grid-cols-2
+              gap-4
+              mb-6
+            ">
+
+              <div className="
+                bg-[#faf8ff]
+                rounded-2xl
+                p-4
+                border
+                border-[#ece7ff]
+              ">
+                <p className="text-sm text-[#8c84b3] mb-1">
+                  Current Wallet
+                </p>
+
+                <h3 className="text-2xl font-bold text-cyan-500">
+                  ₹{paymentReportPatient.walletBalance || 0}
+                </h3>
+              </div>
+
+              <div className="
+                bg-[#faf8ff]
+                rounded-2xl
+                p-4
+                border
+                border-[#ece7ff]
+              ">
+                <p className="text-sm text-[#8c84b3] mb-1">
+                  Current Pending
+                </p>
+
+                <h3 className="text-2xl font-bold text-yellow-500">
+                  ₹{paymentReportPatient.pendingDue || 0}
+                </h3>
+              </div>
+            </div>
+
+            <div className="
+              flex
+              flex-col
+              md:flex-row
+              gap-3
+            ">
+
+              <button
+                onClick={downloadPatientExcel}
+                className="
+                  flex-1
+                  h-14
+                  rounded-2xl
+                  bg-gradient-to-r
+                  from-violet-600
+                  to-fuchsia-500
+                  text-white
+                  font-bold
+                  flex
+                  items-center
+                  justify-center
+                  gap-2
+                "
+              >
+                <FileDown size={18} />
+                Download Excel
+              </button>
+
+              <button
+                onClick={downloadPatientPDF}
+                className="
+                  flex-1
+                  h-14
+                  rounded-2xl
+                  border
+                  border-[#ece7ff]
+                  bg-white
+                  text-[#1f1147]
+                  font-bold
+                  flex
+                  items-center
+                  justify-center
+                  gap-2
+                "
+              >
+                <FileDown size={18} />
+                Download PDF
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )
