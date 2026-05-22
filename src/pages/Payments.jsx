@@ -220,6 +220,24 @@ export default function Payments() {
       return formatDate(paymentDate)
     }
 
+  const getPaymentDateDisplay =
+    (item) => {
+
+      if (!item.date)
+        return ''
+
+      const paymentDate =
+        item.date?.seconds
+          ? new Date(
+              item.date.seconds * 1000
+            )
+          : new Date(item.date)
+
+      return paymentDate.toLocaleDateString(
+        'en-IN'
+      )
+    }
+
   const sortedPayments =
     [...filteredPayments]
 
@@ -274,6 +292,9 @@ export default function Payments() {
       No:
         index + 1,
 
+      Date:
+        getPaymentDateDisplay(item),
+
       Patient:
         item.patient || '-',
 
@@ -290,9 +311,6 @@ export default function Payments() {
 
       Status:
         item.status || '-',
-
-      Date:
-        getPaymentDate(item),
 
       RemainingWallet:
         Number(item.remainingWallet || 0),
@@ -350,23 +368,23 @@ export default function Payments() {
         startY: 34,
         head: [[
           'No',
+          'Date',
           'Patient',
           'Type',
           'Amount',
           'Method',
           'Status',
-          'Date',
           'Wallet',
           'Due'
         ]],
         body: exportRows.map((item) => [
           item.No,
+          item.Date,
           item.Patient,
           item.PaymentType,
           `Rs. ${item.Amount}`,
           item.Method,
           item.Status,
-          item.Date,
           `Rs. ${item.RemainingWallet}`,
           `Rs. ${item.RemainingDue}`
         ])
