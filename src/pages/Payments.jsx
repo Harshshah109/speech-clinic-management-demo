@@ -85,36 +85,6 @@ export default function Payments() {
       }
     }
 
-  const formatDate =
-    (dateObj) => {
-
-      return `${dateObj.getFullYear()}-${
-        String(
-          dateObj.getMonth() + 1
-        ).padStart(2, '0')
-      }-${
-        String(
-          dateObj.getDate()
-        ).padStart(2, '0')
-      }`
-    }
-
-  const getPaymentDate =
-    (item) => {
-
-      if (!item.date)
-        return ''
-
-      const paymentDate =
-        item.date?.seconds
-          ? new Date(
-              item.date.seconds * 1000
-            )
-          : new Date(item.date)
-
-      return formatDate(paymentDate)
-    }
-
   const filteredPayments =
     useMemo(() => {
 
@@ -217,8 +187,38 @@ export default function Payments() {
       0
     )
 
+  const formatDate =
+    (dateObj) => {
+
+      return `${dateObj.getFullYear()}-${
+        String(
+          dateObj.getMonth() + 1
+        ).padStart(2, '0')
+      }-${
+        String(
+          dateObj.getDate()
+        ).padStart(2, '0')
+      }`
+    }
+
   const today =
     formatDate(new Date())
+
+  const getPaymentDate =
+    (item) => {
+
+      if (!item.date)
+        return ''
+
+      const paymentDate =
+        item.date?.seconds
+          ? new Date(
+              item.date.seconds * 1000
+            )
+          : new Date(item.date)
+
+      return formatDate(paymentDate)
+    }
 
   const sortedPayments =
     [...filteredPayments]
@@ -277,7 +277,7 @@ export default function Payments() {
       Patient:
         item.patient || '-',
 
-      Type:
+      PaymentType:
         item.paymentType || 'Payment',
 
       Amount:
@@ -362,7 +362,7 @@ export default function Payments() {
         body: exportRows.map((item) => [
           item.No,
           item.Patient,
-          item.Type,
+          item.PaymentType,
           `Rs. ${item.Amount}`,
           item.Method,
           item.Status,
@@ -387,18 +387,20 @@ export default function Payments() {
 
       return (
 
-        <div className="
-          bg-white/75
-          border
-          border-[#ece7ff]
-          rounded-3xl
-          p-5
-          flex
-          flex-col
-          gap-5
-          backdrop-blur-xl
-          shadow-[0_10px_30px_rgba(124,58,237,0.08)]
-        ">
+        <div
+          className="
+            bg-white/75
+            border
+            border-[#ece7ff]
+            rounded-3xl
+            p-5
+            flex
+            flex-col
+            gap-5
+            backdrop-blur-xl
+            shadow-[0_10px_30px_rgba(124,58,237,0.08)]
+          "
+        >
 
           <div className="flex flex-col xl:flex-row xl:items-center gap-5">
 
@@ -592,6 +594,7 @@ export default function Payments() {
   return (
     <div className="pb-10 text-[#1f1147]">
 
+      {/* HEADER */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
 
         <div>
@@ -716,7 +719,314 @@ export default function Payments() {
         </div>
       </div>
 
-      {/* keep your remaining JSX same from STATS section onward */}
+      {/* STATS */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+
+        <div className="
+          bg-white/75
+          border
+          border-[#ece7ff]
+          rounded-3xl
+          p-6
+        ">
+
+          <div className="
+            w-12
+            h-12
+            rounded-2xl
+            bg-violet-100
+            flex
+            items-center
+            justify-center
+            mb-5
+          ">
+
+            <IndianRupee size={22} />
+          </div>
+
+          <h3 className="text-[#7c6ca8] mb-2">
+            Total Revenue
+          </h3>
+
+          <h2 className="text-4xl font-bold">
+            ₹{totalRevenue}
+          </h2>
+        </div>
+
+        <div className="
+          bg-white/75
+          border
+          border-[#ece7ff]
+          rounded-3xl
+          p-6
+        ">
+
+          <div className="
+            w-12
+            h-12
+            rounded-2xl
+            bg-cyan-100
+            flex
+            items-center
+            justify-center
+            mb-5
+          ">
+
+            <Wallet size={22} />
+          </div>
+
+          <h3 className="text-[#7c6ca8] mb-2">
+            Wallet Balance
+          </h3>
+
+          <h2 className="text-4xl font-bold text-cyan-500">
+            ₹{totalWalletBalance}
+          </h2>
+        </div>
+
+        <div className="
+          bg-white/75
+          border
+          border-[#ece7ff]
+          rounded-3xl
+          p-6
+        ">
+
+          <div className="
+            w-12
+            h-12
+            rounded-2xl
+            bg-amber-100
+            flex
+            items-center
+            justify-center
+            mb-5
+          ">
+
+            <AlertCircle size={22} />
+          </div>
+
+          <h3 className="text-[#7c6ca8] mb-2">
+            Pending Due
+          </h3>
+
+          <h2 className="text-4xl font-bold text-amber-500">
+            ₹{pendingRevenue}
+          </h2>
+        </div>
+      </div>
+
+      {/* PATIENT SEARCH + DATE FILTER */}
+      <div className="mb-6 flex flex-col md:flex-row gap-4">
+
+        <div className="
+          flex
+          items-center
+          gap-3
+          bg-white/80
+          border
+          border-[#ece7ff]
+          rounded-2xl
+          px-5
+          h-14
+          flex-1
+        ">
+
+          <Search
+            size={20}
+            className="text-[#8c84b3]"
+          />
+
+          <input
+            type="text"
+            placeholder="Search patient name..."
+            value={patientSearch}
+            onChange={(e) =>
+              setPatientSearch(
+                e.target.value
+              )
+            }
+            className="
+              bg-transparent
+              outline-none
+              w-full
+              text-[#1f1147]
+            "
+          />
+        </div>
+
+        <input
+          type="date"
+          value={selectedDate}
+          onChange={(e) =>
+            setSelectedDate(
+              e.target.value
+            )
+          }
+          className="
+            bg-white/80
+            border
+            border-[#ece7ff]
+            rounded-2xl
+            px-5
+            h-14
+            outline-none
+            text-[#1f1147]
+          "
+          style={{
+            colorScheme: 'light'
+          }}
+        />
+      </div>
+
+      {/* PAYMENTS */}
+      <div className="space-y-8">
+
+        {selectedDate ? (
+
+          <div>
+
+            <div className="mb-5">
+
+              <h2 className="text-3xl font-bold">
+                {new Date(selectedDate)
+                  .toLocaleDateString(
+                    'en-IN',
+                    {
+                      weekday: 'long',
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric'
+                    }
+                  )}
+              </h2>
+
+              <p className="text-[#7c6ca8] mt-1">
+                {selectedDatePayments.length} payments
+              </p>
+            </div>
+
+            <div className="space-y-4 max-h-[850px] overflow-y-auto pr-2">
+
+              {selectedDatePayments.length === 0 && (
+
+                <div className="
+                  bg-white/75
+                  border
+                  border-[#ece7ff]
+                  rounded-3xl
+                  p-10
+                  text-center
+                  text-[#8c84b3]
+                ">
+                  No payments found
+                </div>
+              )}
+
+              {selectedDatePayments.map((item) => (
+
+                <PaymentCard
+                  key={item.id}
+                  item={item}
+                />
+              ))}
+            </div>
+          </div>
+
+        ) : (
+
+          <>
+            <div>
+
+              <div className="mb-5">
+
+                <h2 className="text-3xl font-bold">
+                  Today's Payments
+                </h2>
+
+                <p className="text-[#7c6ca8] mt-1">
+                  {todayPayments.length} payments
+                </p>
+              </div>
+
+              <div className="space-y-4 max-h-[700px] overflow-y-auto pr-2">
+
+                {todayPayments.length === 0 && (
+
+                  <div className="
+                    bg-white/75
+                    border
+                    border-[#ece7ff]
+                    rounded-3xl
+                    p-10
+                    text-center
+                    text-[#8c84b3]
+                  ">
+                    No payments found
+                  </div>
+                )}
+
+                {todayPayments.map((item) => (
+
+                  <PaymentCard
+                    key={item.id}
+                    item={item}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div>
+
+              <div className="mb-5">
+
+                <h2 className="text-3xl font-bold">
+                  Previous Payments
+                </h2>
+
+                <p className="text-[#7c6ca8] mt-1">
+                  {previousPayments.length} payments
+                </p>
+              </div>
+
+              <div className="space-y-4 max-h-[900px] overflow-y-auto pr-2">
+
+                {previousPayments.length === 0 && (
+
+                  <div className="
+                    bg-white/75
+                    border
+                    border-[#ece7ff]
+                    rounded-3xl
+                    p-10
+                    text-center
+                    text-[#8c84b3]
+                  ">
+                    No payments found
+                  </div>
+                )}
+
+                {previousPayments.map((item) => (
+
+                  <PaymentCard
+                    key={item.id}
+                    item={item}
+                  />
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+
+      {openModal && (
+        <AddPaymentModal
+          close={() =>
+            setOpenModal(false)
+          }
+          refresh={loadData}
+        />
+      )}
     </div>
   )
 }
