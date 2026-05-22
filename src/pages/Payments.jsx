@@ -4,7 +4,8 @@ import {
   Trash2,
   AlertCircle,
   Wallet,
-  Search
+  Search,
+  FileDown
 } from 'lucide-react'
 
 import {
@@ -12,6 +13,12 @@ import {
   useMemo,
   useState
 } from 'react'
+
+import * as XLSX from 'xlsx'
+
+import jsPDF from 'jspdf'
+
+import autoTable from 'jspdf-autotable'
 
 import {
   getPayments,
@@ -76,6 +83,36 @@ export default function Payments() {
 
         console.log(err)
       }
+    }
+
+  const formatDate =
+    (dateObj) => {
+
+      return `${dateObj.getFullYear()}-${
+        String(
+          dateObj.getMonth() + 1
+        ).padStart(2, '0')
+      }-${
+        String(
+          dateObj.getDate()
+        ).padStart(2, '0')
+      }`
+    }
+
+  const getPaymentDate =
+    (item) => {
+
+      if (!item.date)
+        return ''
+
+      const paymentDate =
+        item.date?.seconds
+          ? new Date(
+              item.date.seconds * 1000
+            )
+          : new Date(item.date)
+
+      return formatDate(paymentDate)
     }
 
   const filteredPayments =
@@ -180,38 +217,8 @@ export default function Payments() {
       0
     )
 
-  const formatDate =
-    (dateObj) => {
-
-      return `${dateObj.getFullYear()}-${
-        String(
-          dateObj.getMonth() + 1
-        ).padStart(2, '0')
-      }-${
-        String(
-          dateObj.getDate()
-        ).padStart(2, '0')
-      }`
-    }
-
   const today =
     formatDate(new Date())
-
-  const getPaymentDate =
-    (item) => {
-
-      if (!item.date)
-        return ''
-
-      const paymentDate =
-        item.date?.seconds
-          ? new Date(
-              item.date.seconds * 1000
-            )
-          : new Date(item.date)
-
-      return formatDate(paymentDate)
-    }
 
   const sortedPayments =
     [...filteredPayments]
@@ -256,6 +263,120 @@ export default function Payments() {
         )
       : []
 
+  const exportPayments =
+    selectedDate
+      ? selectedDatePayments
+      : sortedPayments
+
+  const exportRows =
+    exportPayments.map((item, index) => ({
+
+      No:
+        index + 1,
+
+      Patient:
+        item.patient || '-',
+
+      Type:
+        item.paymentType || 'Payment',
+
+      Amount:
+        Number(item.amount || 0),
+
+      Method:
+        item.paymentType === 'Pending Payment'
+          ? 'No payment method required'
+          : item.method || '-',
+
+      Status:
+        item.status || '-',
+
+      Date:
+        getPaymentDate(item),
+
+      RemainingWallet:
+        Number(item.remainingWallet || 0),
+
+      RemainingDue:
+        Number(item.remainingDue || 0)
+    }))
+
+  const downloadExcel =
+    () => {
+
+      const worksheet =
+        XLSX.utils.json_to_sheet(
+          exportRows
+        )
+
+      const workbook =
+        XLSX.utils.book_new()
+
+      XLSX.utils.book_append_sheet(
+        workbook,
+        worksheet,
+        'Payments'
+      )
+
+      XLSX.writeFile(
+        workbook,
+        `payments-${today}.xlsx`
+      )
+    }
+
+  const downloadPDF =
+    () => {
+
+      const doc =
+        new jsPDF()
+
+      doc.setFontSize(18)
+
+      doc.text(
+        'Payments Report',
+        14,
+        18
+      )
+
+      doc.setFontSize(10)
+
+      doc.text(
+        `Generated on: ${today}`,
+        14,
+        26
+      )
+
+      autoTable(doc, {
+        startY: 34,
+        head: [[
+          'No',
+          'Patient',
+          'Type',
+          'Amount',
+          'Method',
+          'Status',
+          'Date',
+          'Wallet',
+          'Due'
+        ]],
+        body: exportRows.map((item) => [
+          item.No,
+          item.Patient,
+          item.Type,
+          `Rs. ${item.Amount}`,
+          item.Method,
+          item.Status,
+          item.Date,
+          `Rs. ${item.RemainingWallet}`,
+          `Rs. ${item.RemainingDue}`
+        ])
+      })
+
+      doc.save(
+        `payments-${today}.pdf`
+      )
+    }
+
   const PaymentCard =
     ({ item }) => {
 
@@ -266,20 +387,18 @@ export default function Payments() {
 
       return (
 
-        <div
-          className="
-            bg-white/75
-            border
-            border-[#ece7ff]
-            rounded-3xl
-            p-5
-            flex
-            flex-col
-            gap-5
-            backdrop-blur-xl
-            shadow-[0_10px_30px_rgba(124,58,237,0.08)]
-          "
-        >
+        <div className="
+          bg-white/75
+          border
+          border-[#ece7ff]
+          rounded-3xl
+          p-5
+          flex
+          flex-col
+          gap-5
+          backdrop-blur-xl
+          shadow-[0_10px_30px_rgba(124,58,237,0.08)]
+        ">
 
           <div className="flex flex-col xl:flex-row xl:items-center gap-5">
 
@@ -473,7 +592,6 @@ export default function Payments() {
   return (
     <div className="pb-10 text-[#1f1147]">
 
-      {/* HEADER */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
 
         <div>
@@ -488,6 +606,50 @@ export default function Payments() {
         </div>
 
         <div className="flex flex-col md:flex-row gap-3">
+
+          <button
+            onClick={downloadExcel}
+            className="
+              flex
+              items-center
+              justify-center
+              gap-2
+              border
+              border-[#ece7ff]
+              bg-white/75
+              rounded-2xl
+              px-5
+              py-4
+              hover:bg-[#f5f3ff]
+              transition-all
+              font-semibold
+            "
+          >
+            <FileDown size={18} />
+            Excel
+          </button>
+
+          <button
+            onClick={downloadPDF}
+            className="
+              flex
+              items-center
+              justify-center
+              gap-2
+              border
+              border-[#ece7ff]
+              bg-white/75
+              rounded-2xl
+              px-5
+              py-4
+              hover:bg-[#f5f3ff]
+              transition-all
+              font-semibold
+            "
+          >
+            <FileDown size={18} />
+            PDF
+          </button>
 
           <div className="
             flex
@@ -554,314 +716,7 @@ export default function Payments() {
         </div>
       </div>
 
-      {/* STATS */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
-
-        <div className="
-          bg-white/75
-          border
-          border-[#ece7ff]
-          rounded-3xl
-          p-6
-        ">
-
-          <div className="
-            w-12
-            h-12
-            rounded-2xl
-            bg-violet-100
-            flex
-            items-center
-            justify-center
-            mb-5
-          ">
-
-            <IndianRupee size={22} />
-          </div>
-
-          <h3 className="text-[#7c6ca8] mb-2">
-            Total Revenue
-          </h3>
-
-          <h2 className="text-4xl font-bold">
-            ₹{totalRevenue}
-          </h2>
-        </div>
-
-        <div className="
-          bg-white/75
-          border
-          border-[#ece7ff]
-          rounded-3xl
-          p-6
-        ">
-
-          <div className="
-            w-12
-            h-12
-            rounded-2xl
-            bg-cyan-100
-            flex
-            items-center
-            justify-center
-            mb-5
-          ">
-
-            <Wallet size={22} />
-          </div>
-
-          <h3 className="text-[#7c6ca8] mb-2">
-            Wallet Balance
-          </h3>
-
-          <h2 className="text-4xl font-bold text-cyan-500">
-            ₹{totalWalletBalance}
-          </h2>
-        </div>
-
-        <div className="
-          bg-white/75
-          border
-          border-[#ece7ff]
-          rounded-3xl
-          p-6
-        ">
-
-          <div className="
-            w-12
-            h-12
-            rounded-2xl
-            bg-amber-100
-            flex
-            items-center
-            justify-center
-            mb-5
-          ">
-
-            <AlertCircle size={22} />
-          </div>
-
-          <h3 className="text-[#7c6ca8] mb-2">
-            Pending Due
-          </h3>
-
-          <h2 className="text-4xl font-bold text-amber-500">
-            ₹{pendingRevenue}
-          </h2>
-        </div>
-      </div>
-
-      {/* PATIENT SEARCH + DATE FILTER */}
-      <div className="mb-6 flex flex-col md:flex-row gap-4">
-
-        <div className="
-          flex
-          items-center
-          gap-3
-          bg-white/80
-          border
-          border-[#ece7ff]
-          rounded-2xl
-          px-5
-          h-14
-          flex-1
-        ">
-
-          <Search
-            size={20}
-            className="text-[#8c84b3]"
-          />
-
-          <input
-            type="text"
-            placeholder="Search patient name..."
-            value={patientSearch}
-            onChange={(e) =>
-              setPatientSearch(
-                e.target.value
-              )
-            }
-            className="
-              bg-transparent
-              outline-none
-              w-full
-              text-[#1f1147]
-            "
-          />
-        </div>
-
-        <input
-          type="date"
-          value={selectedDate}
-          onChange={(e) =>
-            setSelectedDate(
-              e.target.value
-            )
-          }
-          className="
-            bg-white/80
-            border
-            border-[#ece7ff]
-            rounded-2xl
-            px-5
-            h-14
-            outline-none
-            text-[#1f1147]
-          "
-          style={{
-            colorScheme: 'light'
-          }}
-        />
-      </div>
-
-      {/* PAYMENTS */}
-      <div className="space-y-8">
-
-        {selectedDate ? (
-
-          <div>
-
-            <div className="mb-5">
-
-              <h2 className="text-3xl font-bold">
-                {new Date(selectedDate)
-                  .toLocaleDateString(
-                    'en-IN',
-                    {
-                      weekday: 'long',
-                      day: 'numeric',
-                      month: 'long',
-                      year: 'numeric'
-                    }
-                  )}
-              </h2>
-
-              <p className="text-[#7c6ca8] mt-1">
-                {selectedDatePayments.length} payments
-              </p>
-            </div>
-
-            <div className="space-y-4 max-h-[850px] overflow-y-auto pr-2">
-
-              {selectedDatePayments.length === 0 && (
-
-                <div className="
-                  bg-white/75
-                  border
-                  border-[#ece7ff]
-                  rounded-3xl
-                  p-10
-                  text-center
-                  text-[#8c84b3]
-                ">
-                  No payments found
-                </div>
-              )}
-
-              {selectedDatePayments.map((item) => (
-
-                <PaymentCard
-                  key={item.id}
-                  item={item}
-                />
-              ))}
-            </div>
-          </div>
-
-        ) : (
-
-          <>
-            <div>
-
-              <div className="mb-5">
-
-                <h2 className="text-3xl font-bold">
-                  Today's Payments
-                </h2>
-
-                <p className="text-[#7c6ca8] mt-1">
-                  {todayPayments.length} payments
-                </p>
-              </div>
-
-              <div className="space-y-4 max-h-[700px] overflow-y-auto pr-2">
-
-                {todayPayments.length === 0 && (
-
-                  <div className="
-                    bg-white/75
-                    border
-                    border-[#ece7ff]
-                    rounded-3xl
-                    p-10
-                    text-center
-                    text-[#8c84b3]
-                  ">
-                    No payments found
-                  </div>
-                )}
-
-                {todayPayments.map((item) => (
-
-                  <PaymentCard
-                    key={item.id}
-                    item={item}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div>
-
-              <div className="mb-5">
-
-                <h2 className="text-3xl font-bold">
-                  Previous Payments
-                </h2>
-
-                <p className="text-[#7c6ca8] mt-1">
-                  {previousPayments.length} payments
-                </p>
-              </div>
-
-              <div className="space-y-4 max-h-[900px] overflow-y-auto pr-2">
-
-                {previousPayments.length === 0 && (
-
-                  <div className="
-                    bg-white/75
-                    border
-                    border-[#ece7ff]
-                    rounded-3xl
-                    p-10
-                    text-center
-                    text-[#8c84b3]
-                  ">
-                    No payments found
-                  </div>
-                )}
-
-                {previousPayments.map((item) => (
-
-                  <PaymentCard
-                    key={item.id}
-                    item={item}
-                  />
-                ))}
-              </div>
-            </div>
-          </>
-        )}
-      </div>
-
-      {openModal && (
-        <AddPaymentModal
-          close={() =>
-            setOpenModal(false)
-          }
-          refresh={loadData}
-        />
-      )}
+      {/* keep your remaining JSX same from STATS section onward */}
     </div>
   )
 }
