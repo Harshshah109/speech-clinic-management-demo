@@ -7,13 +7,23 @@ import { getAuth }
   from 'firebase/auth'
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDxMLKqK7jIyCWWom16cP4iWDGKhEV1X9A",
-  authDomain: "kalrav-clinic.firebaseapp.com",
-  projectId: "kalrav-clinic",
-  storageBucket: "kalrav-clinic.firebasestorage.app",
-  messagingSenderId: "532419788646",
-  appId: "1:532419788646:web:52a3db654fad10f7d892a7"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
 }
+
+console.log(
+  'PROJECT:',
+  import.meta.env.VITE_FIREBASE_PROJECT_ID
+)
+
+console.log(
+  'AUTH DOMAIN:',
+  import.meta.env.VITE_FIREBASE_AUTH_DOMAIN
+)
 
 const app =
   initializeApp(firebaseConfig)

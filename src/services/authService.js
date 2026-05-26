@@ -1,48 +1,42 @@
 import {
   signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   signOut
 } from 'firebase/auth'
 
-import {
-  doc,
-  getDoc
-} from 'firebase/firestore'
+import { auth } from './firebase'
 
-import {
-  auth,
-  db
-} from './firebase'
+export const loginUser =
+  async (email, password) => {
 
-export const loginUser = async (
-  email,
-  password
-) => {
+    try {
 
-  const userCredential =
-    await signInWithEmailAndPassword(
-      auth,
-      email,
-      password
-    )
+      return await signInWithEmailAndPassword(
+        auth,
+        email.trim(),
+        password.trim()
+      )
 
-  const user =
-    userCredential.user
+    } catch (error) {
 
-  const userDoc =
-    await getDoc(
-      doc(db, 'users', user.uid)
-    )
+      console.log('LOGIN ERROR CODE:', error.code)
 
-  const role =
-    userDoc.exists()
-      ? userDoc.data().role
-      : 'therapist'
+      if (
+        error.code === 'auth/invalid-credential' ||
+        error.code === 'auth/user-not-found' ||
+        error.code === 'auth/wrong-password'
+      ) {
 
-  return {
-    ...user,
-    role
+        return await createUserWithEmailAndPassword(
+          auth,
+          email.trim(),
+          password.trim()
+        )
+      }
+
+      throw error
+    }
   }
-}
 
 export const logoutUser =
   async () => {
