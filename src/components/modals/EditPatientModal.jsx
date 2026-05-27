@@ -245,7 +245,7 @@ export default function EditPatientModal({
             <h3 className="
               text-xs
               tracking-[0.2em]
-              text-violet-500
+              text-blue-500
               font-bold
               mb-5
             ">
@@ -658,14 +658,14 @@ export default function EditPatientModal({
                 h-14
                 rounded-2xl
                 bg-gradient-to-r
-                from-violet-600
-                to-fuchsia-500
+                from-blue-600
+                to-cyan-500
                 text-white
                 font-bold
                 hover:opacity-90
                 transition-all
                 shadow-lg
-                shadow-violet-500/20
+                shadow-blue-500/20
               "
             >
 

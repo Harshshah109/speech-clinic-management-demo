@@ -326,7 +326,7 @@ export default function PatientAppointmentHistoryModal({
                 transition-all
                 ${
                   filter === item
-                    ? 'bg-gradient-to-r from-violet-600 to-fuchsia-500 text-white shadow-lg shadow-violet-500/20'
+                    ? 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg shadow-blue-500/20'
                     : 'border border-[#ece7ff] text-[#1f1147] bg-white'
                 }
               `}
@@ -590,8 +590,8 @@ export default function PatientAppointmentHistoryModal({
                   py-2
                   rounded-2xl
                   bg-gradient-to-r
-                  from-violet-600
-                  to-fuchsia-500
+                  from-blue-600
+                  to-cyan-500
                   text-white
                   font-semibold
                 ">

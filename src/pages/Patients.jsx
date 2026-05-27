@@ -422,7 +422,7 @@ export default function Patients({
               transition-all
               ${
                 patientFilter === item
-                  ? 'bg-gradient-to-r from-violet-600 to-fuchsia-500 text-white'
+                  ? 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white'
                   : 'bg-white/75 border border-[#ece7ff] text-[#1f1147]'
               }
             `}
@@ -527,8 +527,8 @@ export default function Patients({
                     h-16
                     rounded-full
                     bg-gradient-to-br
-                    from-violet-500
-                    to-fuchsia-500
+                    from-blue-500
+                    to-cyan-500
                     text-white
                     flex
                     items-center
@@ -1126,8 +1126,8 @@ export default function Patients({
                   h-14
                   rounded-2xl
                   bg-gradient-to-r
-                  from-violet-600
-                  to-fuchsia-500
+                  from-blue-600
+                  to-cyan-500
                   text-white
                   font-bold
                   flex

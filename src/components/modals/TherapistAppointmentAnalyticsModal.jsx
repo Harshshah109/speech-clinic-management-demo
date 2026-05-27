@@ -284,7 +284,7 @@ export default function TherapistAppointmentAnalyticsModal({
                 transition-all
                 ${
                   filter === item
-                    ? 'bg-gradient-to-r from-violet-600 to-fuchsia-500 text-white'
+                    ? 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white'
                     : 'border border-[#ece7ff] text-[#1f1147]'
                 }
               `}
@@ -396,8 +396,8 @@ export default function TherapistAppointmentAnalyticsModal({
               h-16
               rounded-3xl
               bg-gradient-to-br
-              from-violet-600
-              to-fuchsia-500
+              from-blue-600
+              to-cyan-500
               text-white
               flex
               items-center

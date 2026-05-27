@@ -349,14 +349,14 @@ export default function Dashboard({
           h-14
           rounded-2xl
           bg-gradient-to-br
-          from-violet-500
-          to-fuchsia-500
+          from-blue-500
+          to-cyan-500
           text-white
           flex
           items-center
           justify-center
           shadow-lg
-          shadow-violet-500/20
+          shadow-blue-500/20
         ">
 
           <CalendarDays size={24} />
@@ -421,8 +421,8 @@ export default function Dashboard({
               h-14
               rounded-full
               bg-gradient-to-br
-              from-violet-500
-              to-fuchsia-500
+              from-blue-500
+              to-cyan-500
               text-white
               flex
               items-center
@@ -486,9 +486,9 @@ export default function Dashboard({
   mb-3
   tracking-tight
   bg-gradient-to-r
-  from-violet-900
-  via-purple-700
-  to-fuchsia-600
+  from-slate-900
+  via-blue-700
+  to-cyan-600
   bg-clip-text
   text-transparent
 ">
@@ -501,7 +501,7 @@ export default function Dashboard({
   font-medium
   tracking-wide
 ">
-          Kalrav Speech Therapy Clinic • {' '}
+          Clinic Management System • {' '}
           {new Date().toDateString()}
         </p>
       </div>
@@ -525,8 +525,8 @@ export default function Dashboard({
               }
               className={`px-5 h-12 rounded-2xl border transition-all capitalize font-semibold ${
                 filter === item
-                  ? 'bg-gradient-to-r from-violet-600 to-fuchsia-500 text-white border-transparent'
-                  : 'border-[#ece7ff] bg-white/70 text-[#6d28d9]'
+                  ? 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white border-transparent'
+                  : 'border-[#ece7ff] bg-white/70  text-[#2563eb]'
               }`}
             >
               {item}

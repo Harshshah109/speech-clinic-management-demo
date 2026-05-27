@@ -272,7 +272,7 @@ export default function AddTherapistModal({
             <h3 className="
               text-xs
               tracking-[0.2em]
-              text-violet-500
+              text-blue-500
               font-bold
               mb-5
             ">
@@ -515,7 +515,7 @@ export default function AddTherapistModal({
             <h3 className="
               text-xs
               tracking-[0.2em]
-              text-violet-500
+              text-blue-500
               font-bold
               mb-5
             ">
@@ -574,14 +574,14 @@ export default function AddTherapistModal({
                   h-14
                   rounded-2xl
                   bg-gradient-to-r
-                  from-violet-600
-                  to-fuchsia-500
+                  from-blue-600
+                  to-cyan-500
                   text-white
                   flex
                   items-center
                   justify-center
                   shadow-lg
-                  shadow-violet-500/20
+                  shadow-blue-500/20
                 "
               >
                 <Plus size={18} />
@@ -604,13 +604,13 @@ export default function AddTherapistModal({
                     py-2
                     rounded-full
                     bg-gradient-to-r
-                    from-violet-500
-                    to-fuchsia-500
+                    from-blue-500
+                    to-cyan-500
                     text-white
                     text-sm
                     font-semibold
                     shadow-lg
-                    shadow-violet-500/20
+                    shadow-blue-500/20
                   "
                 >
                   {item}
@@ -625,7 +625,7 @@ export default function AddTherapistModal({
             <h3 className="
               text-xs
               tracking-[0.2em]
-              text-violet-500
+              text-blue-500
               font-bold
               mb-5
             ">
@@ -711,14 +711,14 @@ export default function AddTherapistModal({
                 h-14
                 rounded-2xl
                 bg-gradient-to-r
-                from-violet-600
-                to-fuchsia-500
+                from-blue-600
+                to-cyan-500
                 text-white
                 font-bold
                 hover:opacity-90
                 transition-all
                 shadow-lg
-                shadow-violet-500/20
+                shadow-blue-500/20
               "
             >
 

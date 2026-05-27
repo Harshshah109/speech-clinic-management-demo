@@ -90,10 +90,10 @@ export default function QuickActions() {
       title: 'Add Patient',
       icon: Users,
       gradient:
-        'from-violet-500 to-fuchsia-500',
+        'from-blue-500 to-cyan-500',
 
       shadow:
-        'shadow-violet-500/20',
+        'shadow-blue-500/20',
 
       action: () =>
         openQuickModal(
@@ -118,7 +118,7 @@ export default function QuickActions() {
       title: 'Add Therapist',
       icon: Stethoscope,
       gradient:
-        'from-pink-400 to-rose-500',
+        'from-blue-500 to-cyan-500',
 
       shadow:
         'shadow-pink-500/20',
@@ -132,7 +132,7 @@ export default function QuickActions() {
       title: 'Add Payment',
       icon: Wallet,
       gradient:
-        'from-emerald-400 to-green-500',
+        'from-blue-500 to-cyan-500',
 
       shadow:
         'shadow-emerald-500/20',

@@ -167,8 +167,8 @@ export default function Therapists() {
                   h-16
                   rounded-full
                   bg-gradient-to-br
-                  from-violet-500
-                  to-fuchsia-500
+                  from-blue-500
+                  to-cyan-500
                   text-white
                   flex
                   items-center
@@ -177,7 +177,7 @@ export default function Therapists() {
                   font-bold
                   uppercase
                   shadow-lg
-                  shadow-violet-500/20
+                  shadow-blue-500/20
                 ">
 
                   {(therapist.name || 'TH')
@@ -403,8 +403,8 @@ export default function Therapists() {
                   h-24
                   rounded-full
                   bg-gradient-to-br
-                  from-violet-500
-                  to-fuchsia-500
+                  from-blue-500
+                  to-cyan-500
                   text-white
                   flex
                   items-center
@@ -413,7 +413,7 @@ export default function Therapists() {
                   font-bold
                   uppercase
                   shadow-lg
-                  shadow-violet-500/20
+                  shadow-blue-500/20
                 ">
 
                   {(profileData.name || 'TH')
@@ -577,13 +577,13 @@ export default function Therapists() {
                         py-2
                         rounded-full
                         bg-gradient-to-r
-                        from-violet-500
-                        to-fuchsia-500
+                        from-blue-500
+                        to-cyan-500
                         text-white
                         font-semibold
                         text-sm
                         shadow-lg
-                        shadow-violet-500/20
+                        shadow-blue-500/20
                       "
                     >
                       {item}

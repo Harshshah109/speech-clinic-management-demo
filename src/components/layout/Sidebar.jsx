@@ -20,9 +20,6 @@ import {
   useState
 } from 'react'
 
-import kalravLogo
-  from '../../assets/kalrav-logo.png'
-
 const navSections = [
   {
     title: 'MAIN',
@@ -87,12 +84,12 @@ export default function Sidebar({
         isActive
           ? `
             bg-gradient-to-r
-            from-violet-600
-            to-fuchsia-500
+            from-blue-600
+            to-cyan-500
             text-white
             border-transparent
             shadow-lg
-            shadow-violet-500/20
+            shadow-blue-500/20
           `
           : `
             bg-white/70
@@ -102,16 +99,62 @@ export default function Sidebar({
           `
       }`
 
+  const BrandLogo = () => (
+
+    <div className="
+      flex
+      items-center
+      gap-3
+    ">
+
+      <div className="
+        w-12
+        h-12
+        rounded-2xl
+        bg-gradient-to-br
+        from-blue-600
+        to-cyan-500
+        text-white
+        flex
+        items-center
+        justify-center
+        font-black
+        text-lg
+        shadow-lg
+        shadow-blue-500/25
+      ">
+        CMS
+      </div>
+
+      <div>
+
+        <h2 className="
+          text-lg
+          font-black
+          text-[#1f1147]
+          leading-tight
+        ">
+          Clinic
+        </h2>
+
+        <p className="
+          text-xs
+          font-semibold
+          text-[#7c6ca8]
+          leading-tight
+        ">
+          Management System
+        </p>
+      </div>
+    </div>
+  )
+
   return (
     <>
       {/* MOBILE TOPBAR */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-50 h-16 bg-white/80 backdrop-blur-xl border-b border-[#ece7ff] flex items-center justify-between px-5">
 
-        <img
-          src={kalravLogo}
-          alt="Kalrav"
-          className="h-10 object-contain"
-        />
+        <BrandLogo />
 
         <button
           onClick={() =>
@@ -143,11 +186,7 @@ export default function Sidebar({
               {/* HEADER */}
               <div className="p-5 border-b border-[#ece7ff] flex items-center justify-between">
 
-                <img
-                  src={kalravLogo}
-                  alt="Kalrav"
-                  className="h-16 object-contain"
-                />
+                <BrandLogo />
 
                 <button
                   onClick={() =>
@@ -158,7 +197,7 @@ export default function Sidebar({
 
                   <X
                     size={18}
-                    className="text-[#6d28d9]"
+                    className=" text-[#2563eb]"
                   />
                 </button>
               </div>
@@ -180,7 +219,7 @@ export default function Sidebar({
                     className="mb-6"
                   >
 
-                    <p className="text-xs text-[#8b5cf6] tracking-[0.2em] mb-4 font-semibold">
+                    <p className="text-xs text-[#0ea5e9] tracking-[0.2em] mb-4 font-semibold">
 
                       {section.title}
                     </p>
@@ -246,11 +285,7 @@ export default function Sidebar({
           {/* LOGO */}
           <div className="p-6 border-b border-[#ece7ff]">
 
-            <img
-              src={kalravLogo}
-              alt="Kalrav"
-              className="w-full max-w-[210px] object-contain"
-            />
+            <BrandLogo />
           </div>
 
           {/* NAV */}
@@ -270,7 +305,7 @@ export default function Sidebar({
                 className="mb-6"
               >
 
-                <p className="text-xs text-[#8b5cf6] tracking-[0.2em] mb-4 font-semibold">
+                <p className="text-xs text-[#0ea5e9] tracking-[0.2em] mb-4 font-semibold">
 
                   {section.title}
                 </p>

@@ -139,14 +139,14 @@ export default function CalendarPage() {
               h-14
               rounded-2xl
               bg-gradient-to-br
-              from-violet-500
-              to-fuchsia-500
+              from-blue-500
+              to-cyan-500
               text-white
               flex
               items-center
               justify-center
               shadow-lg
-              shadow-violet-500/20
+              shadow-blue-500/20
             ">
 
               <CalendarDays size={24} />
@@ -194,8 +194,8 @@ export default function CalendarPage() {
                   h-20
                   rounded-3xl
                   bg-gradient-to-br
-                  from-violet-500
-                  to-fuchsia-500
+                  from-blue-500
+                  to-cyan-500
                   text-white
                   flex
                   items-center
@@ -203,7 +203,7 @@ export default function CalendarPage() {
                   mx-auto
                   mb-5
                   shadow-lg
-                  shadow-violet-500/20
+                  shadow-blue-500/20
                 ">
 
                   <CalendarDays size={35} />
@@ -245,8 +245,8 @@ export default function CalendarPage() {
                   h-16
                   rounded-2xl
                   bg-gradient-to-br
-                  from-violet-500
-                  to-fuchsia-500
+                  from-blue-500
+                  to-cyan-500
                   text-white
                   flex
                   items-center
@@ -255,7 +255,7 @@ export default function CalendarPage() {
                   text-lg
                   uppercase
                   shadow-lg
-                  shadow-violet-500/20
+                  shadow-blue-500/20
                 ">
 
                   {(item.patient || 'PT').slice(0, 2)}

@@ -104,21 +104,31 @@ export default function Login({
         shadow-[0_20px_60px_rgba(124,58,237,0.18)]
       ">
 
-        {/* LOGO */}
+        {/* DEMO LOGO */}
         <div className="
           flex
           justify-center
           mb-5
         ">
 
-          <img
-            src="/logo.png"
-            alt="Kalrav"
-            className="
-              h-24
-              object-contain
-            "
-          />
+          <div className="
+            w-24
+            h-24
+            rounded-3xl
+            bg-gradient-to-br
+            from-blue-600
+            to-cyan-500
+            text-white
+            flex
+            items-center
+            justify-center
+            text-3xl
+            font-black
+            shadow-lg
+            shadow-blue-500/25
+          ">
+            CMS
+          </div>
         </div>
 
         {/* TITLE */}
@@ -140,7 +150,7 @@ export default function Login({
             text-[#7c6ca8]
             text-base
           ">
-            Speech Therapy Clinic Admin
+            Clinic Management System
           </p>
         </div>
 
@@ -193,7 +203,7 @@ export default function Login({
                 className="
                   absolute
                   left-4
-                  text-violet-500
+                  text-blue-500
                 "
               />
 
@@ -254,7 +264,7 @@ export default function Login({
                 className="
                   absolute
                   left-4
-                  text-violet-500
+                  text-blue-500
                 "
               />
 
@@ -300,14 +310,14 @@ export default function Login({
               h-14
               rounded-2xl
               bg-gradient-to-r
-              from-violet-600
-              via-fuchsia-500
+              from-blue-600
+              via-cyan-500
               to-purple-500
               text-white
               font-bold
               text-lg
               shadow-lg
-              shadow-violet-500/25
+              shadow-blue-500/25
               hover:scale-[1.01]
               hover:opacity-95
               transition-all

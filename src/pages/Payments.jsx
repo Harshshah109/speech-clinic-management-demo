@@ -427,8 +427,8 @@ export default function Payments() {
               h-14
               rounded-2xl
               bg-gradient-to-br
-              from-violet-500
-              to-fuchsia-500
+              from-blue-500
+              to-cyan-500
               text-white
               flex
               items-center
@@ -694,7 +694,7 @@ export default function Payments() {
                 }
                 className={`px-4 h-11 rounded-xl text-sm font-semibold transition-all ${
                   filter === item
-                    ? 'bg-gradient-to-r from-violet-600 to-fuchsia-500 text-white'
+                    ? 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white'
                     : 'text-[#7c6ca8]'
                 }`}
               >

@@ -77,7 +77,7 @@ export default function StatsCards({
 
         <div className="flex items-center justify-between mb-5">
 
-          <div className={`${iconWrap} bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white shadow-lg shadow-violet-500/20`}>
+          <div className={`${iconWrap} bg-gradient-to-br from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/20`}>
 
             <CalendarDays size={24} />
           </div>
@@ -128,7 +128,7 @@ export default function StatsCards({
 
             <div className="flex items-center justify-between mb-5">
 
-              <div className={`${iconWrap} bg-gradient-to-br from-emerald-400 to-green-500 text-white shadow-lg shadow-emerald-500/20`}>
+              <div className={`${iconWrap} bg-gradient-to-br from-blue-500 to-cyan-500 text-white shadow-lg shadow-emerald-500/20`}>
 
                 <IndianRupee size={24} />
               </div>
@@ -193,7 +193,7 @@ export default function StatsCards({
 
             <div className="flex items-center justify-between mb-5">
 
-              <div className={`${iconWrap} bg-gradient-to-br from-pink-400 to-rose-500 text-white shadow-lg shadow-pink-500/20`}>
+              <div className={`${iconWrap} bg-gradient-to-br from-blue-500 to-cyan-500 text-white shadow-lg shadow-pink-500/20`}>
 
                 <UserRound size={24} />
               </div>

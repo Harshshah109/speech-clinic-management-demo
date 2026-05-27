@@ -633,12 +633,12 @@ export default function AddAppointmentModal({
                 h-14
                 rounded-2xl
                 bg-gradient-to-r
-                from-violet-600
-                to-fuchsia-500
+                from-blue-600
+                to-cyan-500
                 text-white
                 font-bold
                 shadow-lg
-                shadow-violet-500/20
+                shadow-blue-500/20
                 hover:opacity-90
                 transition-all
               "

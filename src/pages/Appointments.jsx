@@ -325,8 +325,8 @@ function Appointments({
           h-14
           rounded-full
           bg-gradient-to-br
-          from-violet-500
-          to-fuchsia-500
+          from-blue-500
+          to-cyan-500
           text-white
           flex
           items-center
@@ -334,7 +334,7 @@ function Appointments({
           font-bold
           uppercase
           shadow-lg
-          shadow-violet-500/20
+          shadow-blue-500/20
         ">
           {
             (
