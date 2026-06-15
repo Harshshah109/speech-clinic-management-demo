@@ -3,7 +3,7 @@
 A full-stack, production-ready web application built to streamline the daily operations of speech therapy clinics — from patient management and appointment scheduling to payments and therapist tracking.
 
 🔗 Live Demo: https://speech-clinic-management-demo.vercel.app
-📁 GitHub: Harshshah109/speech-clinic-management-demo
+📁 GitHub: https://github.com/Harshshah109/speech-clinic-management-demo
 
 
 🔐 Demo Credentials
